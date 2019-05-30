@@ -14,20 +14,6 @@ def is_full_string(string):
     return is_string(string) and string.strip() != ''
 
 def is_snake_case(string, separator='_'):
-    """
-    Checks if a string is formatted as snake case.
-    A string is considered snake case when:
-    * it's composed only by lowercase letters ([a-z]), underscores (or provided separator) \
-    and optionally numbers ([0-9])
-    * it does not start/end with an underscore (or provided separator)
-    * it does not start with a number
-    :param string: String to test.
-    :type string: str
-    :param separator: String to use as separator.
-    :type separator: str
-    :return: True for a snake case string, false otherwise.
-    :rtype: bool
-    """
     if is_full_string(string):
         if len(string.replace("_", " ").split()) == 1:
             return bool(re.search(ONE_WORD, string))
@@ -49,14 +35,14 @@ if sys.argv[1].endswith(".avsc"):
     print(" >>>>> Extensão de arquivo válido")
 else:
     print(" >>>>> Extensão de arquivo inválido")
-    sys.exit()
+    sys.exit(1)
 
 print(">>>>> Validando schema")
 try:
     schema = avro.schema.Parse(open(sys.argv[1], "rb").read())
 except:
     print(" >>>>> Formato do schema inválido")
-    sys.exit()
+    sys.exit(2)
 print(" >>>>> Formato do schema válido")
 
 data = json.loads(str(schema))
@@ -71,6 +57,9 @@ for field in fields:
         foraPadrao = foraPadrao + "["+ field['name'] +"] "
 if foraPadrao != "":
     print(" >>>>> Campos fora do padrão snake_case: " + foraPadrao)
+    sys.exit(3)
+else:
+    print(" >>>>> Campos dentro do padrão snake_case")
 
 
 
